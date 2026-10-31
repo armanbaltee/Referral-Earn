@@ -7,6 +7,15 @@ export enum UserRole {
   SUPER_ADMIN = 'super_admin',
 }
 
+export type AccountStatus =
+  | 'pending_payment'
+  | 'pending_verification'
+  | 'active'
+  | 'suspended'
+  | 'banned';
+
+export type RegistrationPaymentStatus = 'unpaid' | 'pending' | 'paid' | 'refunded';
+
 export interface AuthUser {
   _id: string;
   name: string;
@@ -15,6 +24,10 @@ export interface AuthUser {
   role: UserRole;
   avatar?: string;
   referralCode: string;
+  accountStatus: AccountStatus;
+  registrationPaymentStatus: RegistrationPaymentStatus;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
   isActive: boolean;
 }
 
@@ -24,6 +37,7 @@ interface AuthState {
   isAuthenticated: boolean;
 
   setUser: (user: AuthUser) => void;
+  updateUser: (fields: Partial<AuthUser>) => void;
   setAccessToken: (token: string) => void;
   setAuth: (user: AuthUser, token: string) => void;
   logout: () => void;
@@ -37,6 +51,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setUser: (user) => set({ user, isAuthenticated: true }),
+
+      updateUser: (fields) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...fields } : null,
+        })),
 
       setAccessToken: (accessToken) => set({ accessToken }),
 

@@ -2,6 +2,8 @@
 // This ensures all models are registered with Mongoose before any queries run.
 
 export { User } from '../modules/users/user.model.js';
+export { Session } from '../modules/users/session.model.js';
+export { AccountStatus, RegistrationPaymentStatus } from '../modules/users/user.types.js';
 export { Product, ProductStatus } from '../modules/products/product.model.js';
 export { Order, OrderStatus } from '../modules/products/order.model.js';
 export { Referral, ReferralStatus } from '../modules/referrals/referral.model.js';

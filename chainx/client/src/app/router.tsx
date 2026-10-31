@@ -11,6 +11,10 @@ import { UserRole } from '@/types';
 // ─── Lazy-loaded pages ─────────────────────────────────────────────────────────
 const LoginPage = lazy(() => import('@features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@features/auth/pages/RegisterPage'));
+const RegistrationPaymentPage = lazy(() => import('@features/auth/pages/RegistrationPaymentPage'));
+const ForgotPasswordPage = lazy(() => import('@features/auth/pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@features/auth/pages/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('@features/auth/pages/VerifyEmailPage'));
 const DashboardPage = lazy(() => import('@features/dashboard/pages/DashboardPage'));
 const AdminDashboardPage = lazy(() => import('@features/dashboard/pages/AdminDashboardPage'));
 
@@ -59,25 +63,57 @@ export const router = createBrowserRouter([
   },
   // Guest / Auth routes
   {
-    element: (
-      <GuestRoute>
-        <AuthLayout />
-      </GuestRoute>
-    ),
+    element: <AuthLayout />,
     children: [
       {
         path: '/login',
         element: (
-          <Suspense fallback={<PageLoader />}>
-            <LoginPage />
-          </Suspense>
+          <GuestRoute>
+            <Suspense fallback={<PageLoader />}>
+              <LoginPage />
+            </Suspense>
+          </GuestRoute>
         ),
       },
       {
         path: '/register',
         element: (
+          <GuestRoute>
+            <Suspense fallback={<PageLoader />}>
+              <RegisterPage />
+            </Suspense>
+          </GuestRoute>
+        ),
+      },
+      {
+        path: '/register-payment',
+        element: (
           <Suspense fallback={<PageLoader />}>
-            <RegisterPage />
+            <RegistrationPaymentPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/forgot-password',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ForgotPasswordPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/reset-password',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ResetPasswordPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/verify-email',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <VerifyEmailPage />
           </Suspense>
         ),
       },

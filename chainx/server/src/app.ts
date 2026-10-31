@@ -14,6 +14,8 @@ import { env } from './config/env.js';
 import './database/models.js'; // Register all models
 
 import healthRouter from './modules/admin/health.routes.js';
+import authRouter from './modules/users/user.routes.js';
+import adminUserRouter from './modules/admin/user.admin.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -62,6 +64,8 @@ if (env.NODE_ENV !== 'production') {
 
 // ─── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/v1/health', healthRouter);
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/admin/users', adminUserRouter);
 
 // ─── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFoundHandler);

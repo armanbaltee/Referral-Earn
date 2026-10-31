@@ -25,12 +25,12 @@ Label.displayName = 'Label';
 
 /* ─── Form Field Wrapper ─────────────────────────────────────────────────── */
 export interface FormFieldProps {
-  label?: string;
-  required?: boolean;
-  error?: string;
-  hint?: string;
+  label?: string | undefined;
+  required?: boolean | undefined;
+  error?: string | undefined;
+  hint?: string | undefined;
   children: React.ReactNode;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function FormField({ label, required, error, hint, children, className }: FormFieldProps): React.ReactElement {
