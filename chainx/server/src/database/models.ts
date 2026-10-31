@@ -37,3 +37,11 @@ export {
   PaymentMode,
 } from '../modules/transactions/payment.model.js';
 export { IdempotencyRecord } from '../modules/transactions/idempotencyRecord.model.js';
+export { SystemSetting } from '../modules/admin/systemSetting.model.js';
+export {
+  RegistrationPayment,
+  RegPaymentStatus,
+  RegVerificationStatus,
+  RegPaymentMode,
+} from '../modules/transactions/registrationPayment.model.js';
+

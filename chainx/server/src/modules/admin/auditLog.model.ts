@@ -20,6 +20,9 @@ export enum AuditAction {
   USER_ROLE_CHANGED = 'user.role_changed',
   WALLET_LOCKED = 'wallet.locked',
   WALLET_UNLOCKED = 'wallet.unlocked',
+  SYSTEM_CONFIG_UPDATED = 'system.config_updated',
+  REGISTRATION_PAYMENT_APPROVED = 'registration.payment_approved',
+  REGISTRATION_PAYMENT_REJECTED = 'registration.payment_rejected',
   // Content
   PRODUCT_CREATED = 'product.created',
   PRODUCT_UPDATED = 'product.updated',

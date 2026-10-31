@@ -73,6 +73,7 @@ const adminNavGroups: AdminNavGroup[] = [
   {
     group: 'Financial Management',
     items: [
+      { label: 'Registration Fees', href: '/admin/registration-payments', icon: FileCheck2, badge: 'Fee Audit' },
       { label: 'Wallet Management', href: '/admin/wallets', icon: Wallet },
       { label: 'Deposits', href: '/admin/deposits', icon: ArrowDownCircle, badge: '3 pending' },
       { label: 'Withdrawals', href: '/admin/withdrawals', icon: ArrowUpCircle, badge: '5 pending' },

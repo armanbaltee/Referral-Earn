@@ -17,6 +17,14 @@ const ResetPasswordPage = lazy(() => import('@features/auth/pages/ResetPasswordP
 const VerifyEmailPage = lazy(() => import('@features/auth/pages/VerifyEmailPage'));
 const DashboardPage = lazy(() => import('@features/dashboard/pages/DashboardPage'));
 const AdminDashboardPage = lazy(() => import('@features/dashboard/pages/AdminDashboardPage'));
+const ProductCatalogPage = lazy(() => import('@features/products/pages/ProductCatalogPage'));
+const ProductDetailPage = lazy(() => import('@features/products/pages/ProductDetailPage'));
+const OrderHistoryPage = lazy(() => import('@features/products/pages/OrderHistoryPage'));
+const AdminProductsPage = lazy(() => import('@features/products/pages/AdminProductsPage'));
+const AdminOrdersPage = lazy(() => import('@features/products/pages/AdminOrdersPage'));
+const AdminRegistrationPaymentsPage = lazy(
+  () => import('@features/registrationPayment/pages/AdminRegistrationPaymentsPage')
+);
 
 // ─── Route Guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.ReactElement {
@@ -138,10 +146,25 @@ export const router = createBrowserRouter([
       {
         path: '/products',
         element: (
-          <FeaturePlaceholder
-            title="My Products & Orders"
-            description="Manage purchased courses, digital packages, and order receipts."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <ProductCatalogPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/products/:slug',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProductDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderHistoryPage />
+          </Suspense>
         ),
       },
       {
@@ -257,21 +280,25 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: (
-          <FeaturePlaceholder
-            title="Products Catalog"
-            description="Create, edit, and publish affiliate products, packages, and pricing tiers."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminProductsPage />
+          </Suspense>
         ),
       },
       {
         path: 'orders',
         element: (
-          <FeaturePlaceholder
-            title="Order Management"
-            description="Track customer orders, sales fulfillment, and package activation."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminOrdersPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'registration-payments',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminRegistrationPaymentsPage />
+          </Suspense>
         ),
       },
       {

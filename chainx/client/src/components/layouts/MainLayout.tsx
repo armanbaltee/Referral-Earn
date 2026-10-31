@@ -10,6 +10,7 @@ import {
   CheckSquare,
   Receipt,
   Package,
+  ShoppingBag,
   Bell,
   User,
   LifeBuoy,
@@ -46,7 +47,8 @@ interface NavItem {
 
 const userNavItems: NavItem[] = [
   { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'My Products / Orders', href: '/products', icon: Package },
+  { label: 'Products & Nodes', href: '/products', icon: Package },
+  { label: 'My Orders', href: '/orders', icon: ShoppingBag },
   { label: 'My Referrals', href: '/referrals', icon: Users, badge: 'Tier 1' },
   { label: 'Wallet', href: '/wallet', icon: Wallet },
   { label: 'Deposits', href: '/deposits', icon: ArrowDownCircle },
