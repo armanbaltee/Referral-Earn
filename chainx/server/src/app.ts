@@ -18,6 +18,7 @@ import authRouter from './modules/users/user.routes.js';
 import adminUserRouter from './modules/admin/user.admin.routes.js';
 import productRouter from './modules/products/product.routes.js';
 import registrationPaymentRouter from './modules/transactions/registrationPayment.routes.js';
+import { referralRoutes } from './modules/referrals/referral.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -70,6 +71,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/admin/users', adminUserRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/registration-payments', registrationPaymentRouter);
+app.use('/api/v1/referrals', referralRoutes);
 
 // ─── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFoundHandler);

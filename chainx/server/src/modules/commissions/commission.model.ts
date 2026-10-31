@@ -5,6 +5,7 @@ export enum CommissionType {
   PRODUCT_SALE = 'product_sale',
   DAILY_INCOME = 'daily_income',
   TASK_BONUS = 'task_bonus',
+  MILESTONE_BONUS = 'milestone_bonus',
 }
 
 export enum CommissionStatus {

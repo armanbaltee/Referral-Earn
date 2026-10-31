@@ -126,9 +126,10 @@ export class UserService {
         referrer: referrer._id,
         referee: user._id,
         referralCode: referrer.referralCode,
-        status: ReferralStatus.PENDING,
+        status: ReferralStatus.PAYMENT_PENDING,
         level: 1, // Direct referral
         totalCommissionEarned: 0,
+        isEligibleForMilestone: false,
       });
     }
 

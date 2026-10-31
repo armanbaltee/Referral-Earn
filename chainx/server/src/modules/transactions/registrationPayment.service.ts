@@ -10,7 +10,7 @@ import { Payment, PaymentStatus, PaymentGateway, PaymentMode } from './payment.m
 import { IdempotencyRecord } from './idempotencyRecord.model.js';
 import { User } from '../users/user.model.js';
 import { AccountStatus, RegistrationPaymentStatus } from '../users/user.types.js';
-import { Referral, ReferralStatus } from '../referrals/referral.model.js';
+import { ReferralService } from '../referrals/referral.service.js';
 import { AuditLog, AuditAction } from '../admin/auditLog.model.js';
 import { SystemSettingService } from '../admin/systemSetting.service.js';
 import { EasypaisaAdapter } from './adapters/easypaisa.adapter.js';
@@ -205,13 +205,8 @@ export class RegistrationPaymentService {
         user.isActive = true;
         await user.save();
 
-        // Activate referral node
-        const referral = await Referral.findOne({ referee: user._id });
-        if (referral) {
-          referral.status = ReferralStatus.ACTIVE;
-          referral.activatedAt = new Date();
-          await referral.save();
-        }
+        // Advance referral lifecycle & credit direct commission/milestones
+        await ReferralService.evaluateAndAdvanceReferralLifecycle(user._id.toString());
 
         await AuditLog.create({
           actor: user._id,
@@ -282,13 +277,8 @@ export class RegistrationPaymentService {
       user.isActive = true;
       await user.save();
 
-      // Activate referral node
-      const referral = await Referral.findOne({ referee: user._id });
-      if (referral) {
-        referral.status = ReferralStatus.ACTIVE;
-        referral.activatedAt = new Date();
-        await referral.save();
-      }
+      // Advance referral lifecycle & credit direct commission/milestones
+      await ReferralService.evaluateAndAdvanceReferralLifecycle(user._id.toString());
 
       await AuditLog.create({
         actor: new mongoose.Types.ObjectId(adminId),

@@ -25,6 +25,8 @@ const AdminOrdersPage = lazy(() => import('@features/products/pages/AdminOrdersP
 const AdminRegistrationPaymentsPage = lazy(
   () => import('@features/registrationPayment/pages/AdminRegistrationPaymentsPage')
 );
+const ReferralsPage = lazy(() => import('@features/referrals/pages/ReferralsPage'));
+const AdminReferralsPage = lazy(() => import('@features/referrals/pages/AdminReferralsPage'));
 
 // ─── Route Guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.ReactElement {
@@ -170,10 +172,9 @@ export const router = createBrowserRouter([
       {
         path: '/referrals',
         element: (
-          <FeaturePlaceholder
-            title="My Referrals & Network"
-            description="View your 3-level affiliate downline tree, referral link performance, and commission records."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <ReferralsPage />
+          </Suspense>
         ),
       },
       {
@@ -304,11 +305,9 @@ export const router = createBrowserRouter([
       {
         path: 'referrals',
         element: (
-          <FeaturePlaceholder
-            title="Referral Tree Oversight"
-            description="Audit full network multi-level marketing trees and lineage integrity."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminReferralsPage />
+          </Suspense>
         ),
       },
       {

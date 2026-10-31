@@ -44,4 +44,12 @@ export {
   RegVerificationStatus,
   RegPaymentMode,
 } from '../modules/transactions/registrationPayment.model.js';
+export {
+  MilestoneAchievement,
+  MilestoneStatus,
+} from '../modules/referrals/milestone.model.js';
+export {
+  RegistrationRefund,
+  RefundPayoutMethod,
+} from '../modules/referrals/registrationRefund.model.js';
 

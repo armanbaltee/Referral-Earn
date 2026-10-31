@@ -23,6 +23,11 @@ export enum AuditAction {
   SYSTEM_CONFIG_UPDATED = 'system.config_updated',
   REGISTRATION_PAYMENT_APPROVED = 'registration.payment_approved',
   REGISTRATION_PAYMENT_REJECTED = 'registration.payment_rejected',
+  REFERRAL_REVERSED = 'referral.reversed',
+  MILESTONE_ACHIEVED = 'milestone.achieved',
+  FEE_REFUND_APPROVED = 'fee_refund.approved',
+  FEE_REFUND_REJECTED = 'fee_refund.rejected',
+  FEE_REFUND_COMPLETED = 'fee_refund.completed',
   // Content
   PRODUCT_CREATED = 'product.created',
   PRODUCT_UPDATED = 'product.updated',
