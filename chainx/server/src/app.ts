@@ -19,6 +19,10 @@ import adminUserRouter from './modules/admin/user.admin.routes.js';
 import productRouter from './modules/products/product.routes.js';
 import registrationPaymentRouter from './modules/transactions/registrationPayment.routes.js';
 import { referralRoutes } from './modules/referrals/referral.routes.js';
+import { walletRoutes } from './modules/wallet/wallet.routes.js';
+import { depositRoutes } from './modules/deposits/deposit.routes.js';
+import { withdrawalRoutes } from './modules/withdrawals/withdrawal.routes.js';
+import { taskRoutes } from './modules/tasks/task.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -72,6 +76,10 @@ app.use('/api/v1/admin/users', adminUserRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/registration-payments', registrationPaymentRouter);
 app.use('/api/v1/referrals', referralRoutes);
+app.use('/api/v1/wallet', walletRoutes);
+app.use('/api/v1/deposits', depositRoutes);
+app.use('/api/v1/withdrawals', withdrawalRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 // ─── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFoundHandler);

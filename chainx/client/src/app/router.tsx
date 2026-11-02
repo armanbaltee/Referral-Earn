@@ -28,6 +28,23 @@ const AdminRegistrationPaymentsPage = lazy(
 const ReferralsPage = lazy(() => import('@features/referrals/pages/ReferralsPage'));
 const AdminReferralsPage = lazy(() => import('@features/referrals/pages/AdminReferralsPage'));
 
+// ─── Phase 6: Wallet, Deposits, Withdrawals, Transactions ────────────────────
+const WalletPage = lazy(() => import('@features/wallet/pages/WalletPage'));
+const DepositsPage = lazy(() => import('@features/wallet/pages/DepositsPage'));
+const WithdrawalsPage = lazy(() => import('@features/wallet/pages/WithdrawalsPage'));
+const TransactionsPage = lazy(() => import('@features/wallet/pages/TransactionsPage'));
+const AdminWalletsPage = lazy(() => import('@features/wallet/pages/AdminWalletsPage'));
+const AdminDepositsPage = lazy(() => import('@features/wallet/pages/AdminDepositsPage'));
+const AdminWithdrawalsPage = lazy(() => import('@features/wallet/pages/AdminWithdrawalsPage'));
+const AdminLedgerPage = lazy(() => import('@features/wallet/pages/AdminLedgerPage'));
+
+// ─── Phase 7: Daily Tasks & Reward System ────────────────────────────────────
+const TaskMarketplacePage = lazy(() => import('@features/tasks/pages/TaskMarketplacePage'));
+const TaskDetailPage = lazy(() => import('@features/tasks/pages/TaskDetailPage'));
+const MySubmissionsPage = lazy(() => import('@features/tasks/pages/MySubmissionsPage'));
+const AdminTasksPage = lazy(() => import('@features/tasks/pages/AdminTasksPage'));
+const AdminTaskSubmissionsPage = lazy(() => import('@features/tasks/pages/AdminTaskSubmissionsPage'));
+
 // ─── Route Guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.ReactElement {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -180,46 +197,57 @@ export const router = createBrowserRouter([
       {
         path: '/wallet',
         element: (
-          <FeaturePlaceholder
-            title="ChainX Wallet"
-            description="Multi-ledger balances: available balance, pending earnings, and escrow funds."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <WalletPage />
+          </Suspense>
         ),
       },
       {
         path: '/deposits',
         element: (
-          <FeaturePlaceholder
-            title="Deposit Funds"
-            description="Automatic TRC20 USDT gateway and manual banking deposit receipts."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <DepositsPage />
+          </Suspense>
         ),
       },
       {
         path: '/withdrawals',
         element: (
-          <FeaturePlaceholder
-            title="Withdrawal Requests"
-            description="Secure withdrawal requests with 2FA, PIN confirmation, and batch payout tracker."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <WithdrawalsPage />
+          </Suspense>
         ),
       },
       {
         path: '/tasks',
         element: (
-          <FeaturePlaceholder
-            title="Daily Tasks & Earning"
-            description="Complete social, promotional, and survey tasks to earn instant cash rewards."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <TaskMarketplacePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/tasks/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TaskDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/tasks/submissions',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MySubmissionsPage />
+          </Suspense>
         ),
       },
       {
         path: '/transactions',
         element: (
-          <FeaturePlaceholder
-            title="Transaction History"
-            description="Detailed immutable ledger statements, filtering by date, type, and transaction ID."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <TransactionsPage />
+          </Suspense>
         ),
       },
       {
@@ -323,31 +351,25 @@ export const router = createBrowserRouter([
       {
         path: 'wallets',
         element: (
-          <FeaturePlaceholder
-            title="Wallet & Ledger Management"
-            description="System ledger auditing, balance adjustments, manual credits, and debit holds."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminWalletsPage />
+          </Suspense>
         ),
       },
       {
         path: 'deposits',
         element: (
-          <FeaturePlaceholder
-            title="Deposit Verification"
-            description="Approve and reject manual deposit proof slips and TRC20 webhook monitors."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminDepositsPage />
+          </Suspense>
         ),
       },
       {
         path: 'withdrawals',
         element: (
-          <FeaturePlaceholder
-            title="Withdrawal Payout Queue"
-            description="Review, batch-process, approve, or reject user withdrawal requests."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminWithdrawalsPage />
+          </Suspense>
         ),
       },
       {
@@ -363,21 +385,25 @@ export const router = createBrowserRouter([
       {
         path: 'tasks',
         element: (
-          <FeaturePlaceholder
-            title="Task Management"
-            description="Create daily tasks, set reward values, task expiration, and proof criteria."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminTasksPage />
+          </Suspense>
         ),
       },
       {
         path: 'task-submissions',
         element: (
-          <FeaturePlaceholder
-            title="Task Submissions Review"
-            description="Moderate user-uploaded proof screenshots and credit approved task rewards."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminTaskSubmissionsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'transactions',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminLedgerPage />
+          </Suspense>
         ),
       },
       {

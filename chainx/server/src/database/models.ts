@@ -7,10 +7,11 @@ export { AccountStatus, RegistrationPaymentStatus } from '../modules/users/user.
 export { Product, ProductStatus } from '../modules/products/product.model.js';
 export { Order, OrderStatus } from '../modules/products/order.model.js';
 export { Referral, ReferralStatus } from '../modules/referrals/referral.model.js';
-export { Wallet } from '../modules/wallet/wallet.model.js';
+export { Wallet, type IWallet } from '../modules/wallet/wallet.model.js';
 export {
   WalletTransaction,
   TransactionType,
+  TransactionDirection,
   TransactionStatus,
 } from '../modules/transactions/walletTransaction.model.js';
 export { Deposit, DepositStatus, PaymentMethod } from '../modules/deposits/deposit.model.js';
@@ -21,7 +22,7 @@ export {
   CommissionStatus,
 } from '../modules/commissions/commission.model.js';
 export { Refund, RefundStatus } from '../modules/refunds/refund.model.js';
-export { Task, TaskType, TaskStatus } from '../modules/tasks/task.model.js';
+export { Task, TaskCategory, TaskStatus, ProofType } from '../modules/tasks/task.model.js';
 export { TaskSubmission, TaskSubmissionStatus } from '../modules/tasks/taskSubmission.model.js';
 export { Notification, NotificationType } from '../modules/notifications/notification.model.js';
 export {

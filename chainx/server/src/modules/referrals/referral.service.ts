@@ -21,6 +21,7 @@ import { Wallet } from '../wallet/wallet.model.js';
 import {
   WalletTransaction,
   TransactionType,
+  TransactionDirection,
   TransactionStatus,
 } from '../transactions/walletTransaction.model.js';
 import { Commission, CommissionType, CommissionStatus } from '../commissions/commission.model.js';
@@ -322,28 +323,32 @@ export class ReferralService {
       // Find or create referrer wallet
       let referrerWallet = await Wallet.findOne({ user: referrer._id });
       if (!referrerWallet) {
-        referrerWallet = await Wallet.create({ user: referrer._id, balance: 0 });
+        referrerWallet = await Wallet.create({ user: referrer._id });
       }
 
-      const balanceBefore = referrerWallet.balance;
+      const balanceBefore = referrerWallet.availableBalance;
       const balanceAfter = balanceBefore + commissionAmount;
 
-      referrerWallet.balance = balanceAfter;
-      referrerWallet.totalCommissionEarned += commissionAmount;
+      referrerWallet.availableBalance = balanceAfter;
+      referrerWallet.referralCommissions += commissionAmount;
+      referrerWallet.totalEarned += commissionAmount;
       await referrerWallet.save();
 
       // Create immutable financial ledger transaction
       const walletTx = await WalletTransaction.create({
         wallet: referrerWallet._id,
         user: referrer._id,
-        type: TransactionType.COMMISSION,
+        type: TransactionType.REFERRAL_COMMISSION,
+        direction: TransactionDirection.CREDIT,
         status: TransactionStatus.COMPLETED,
         amount: commissionAmount,
+        currency: 'PKR',
         balanceBefore,
         balanceAfter,
         description: `Direct referral commission (Phase 5) for referee: ${referee.name || referee.email}`,
-        referenceId: referral._id.toString(),
-        referenceModel: 'Referral',
+        idempotencyKey,
+        sourceReference: referral._id.toString(),
+        sourceModel: 'Referral',
         metadata: {
           level: 1,
           policyVersion: policy.policyVersion,
@@ -430,26 +435,30 @@ export class ReferralService {
     // Find or create referrer wallet
     let wallet = await Wallet.findOne({ user: referrerUserId });
     if (!wallet) {
-      wallet = await Wallet.create({ user: referrerUserId, balance: 0 });
+      wallet = await Wallet.create({ user: referrerUserId });
     }
 
-    const balanceBefore = wallet.balance;
+    const balanceBefore = wallet.availableBalance;
     const balanceAfter = balanceBefore + bonusAmount;
 
-    wallet.balance = balanceAfter;
-    wallet.totalCommissionEarned += bonusAmount;
+    wallet.availableBalance = balanceAfter;
+    wallet.referralBonuses += bonusAmount;
+    wallet.totalEarned += bonusAmount;
     await wallet.save();
 
     // Create immutable ledger transaction
     const walletTx = await WalletTransaction.create({
       wallet: wallet._id,
       user: new mongoose.Types.ObjectId(referrerUserId),
-      type: TransactionType.COMMISSION,
+      type: TransactionType.REFERRAL_BONUS,
+      direction: TransactionDirection.CREDIT,
       status: TransactionStatus.COMPLETED,
       amount: bonusAmount,
+      currency: 'PKR',
       balanceBefore,
       balanceAfter,
       description: `Milestone Bonus: 10 Eligible Direct Referrals Achieved (Rs. ${bonusAmount / 100})`,
+      idempotencyKey,
       metadata: {
         isMilestoneBonus: true,
         threshold: policy.milestoneThreshold,
@@ -710,24 +719,28 @@ export class ReferralService {
       const wallet = await Wallet.findOne({ user: referral.referrer });
       if (wallet) {
         const debitAmount = referral.commissionAmount;
-        const balanceBefore = wallet.balance;
+        const balanceBefore = wallet.availableBalance;
         const balanceAfter = Math.max(0, balanceBefore - debitAmount);
 
-        wallet.balance = balanceAfter;
-        wallet.totalCommissionEarned = Math.max(0, wallet.totalCommissionEarned - debitAmount);
+        wallet.availableBalance = balanceAfter;
+        wallet.referralCommissions = Math.max(0, wallet.referralCommissions - debitAmount);
+        wallet.totalEarned = Math.max(0, wallet.totalEarned - debitAmount);
         await wallet.save();
 
         await WalletTransaction.create({
           wallet: wallet._id,
           user: referral.referrer,
           type: TransactionType.REVERSAL,
+          direction: TransactionDirection.DEBIT,
           status: TransactionStatus.COMPLETED,
           amount: debitAmount,
+          currency: 'PKR',
           balanceBefore,
           balanceAfter,
           description: `Referral commission reversed by admin. Reason: ${reason}`,
-          referenceId: referral._id.toString(),
-          referenceModel: 'Referral',
+          idempotencyKey: `REVERSAL-REF-${referral._id.toString()}`,
+          sourceReference: referral._id.toString(),
+          sourceModel: 'Referral',
           processedBy: new mongoose.Types.ObjectId(adminId),
         });
 
@@ -858,30 +871,34 @@ export class ReferralService {
       if (refund.payoutMethod === RefundPayoutMethod.WALLET_CREDIT) {
         let wallet = await Wallet.findOne({ user: refund.user });
         if (!wallet) {
-          wallet = await Wallet.create({ user: refund.user, balance: 0 });
+          wallet = await Wallet.create({ user: refund.user });
         }
 
         const refundPaisa = refund.feeAmount; // 1500000 = Rs. 15,000
-        const balanceBefore = wallet.balance;
+        const balanceBefore = wallet.availableBalance;
         const balanceAfter = balanceBefore + refundPaisa;
 
-        wallet.balance = balanceAfter;
+        wallet.availableBalance = balanceAfter;
         // CRITICAL SPEC REQUIREMENT:
         // "Refund is a separate transaction, not referral commission. Never count the user's own registration payment as earnings."
-        // We do NOT add to wallet.totalCommissionEarned.
+        // We add to refundCredits only, NOT totalEarned/referralCommissions.
+        wallet.refundCredits += refundPaisa;
         await wallet.save();
 
         const walletTx = await WalletTransaction.create({
           wallet: wallet._id,
           user: refund.user,
-          type: TransactionType.REFUND,
+          type: TransactionType.REGISTRATION_REFUND,
+          direction: TransactionDirection.CREDIT,
           status: TransactionStatus.COMPLETED,
           amount: refundPaisa,
+          currency: 'PKR',
           balanceBefore,
           balanceAfter,
           description: `Registration fee refund credited to wallet (10 qualifying referrals verified)`,
-          referenceId: refund._id.toString(),
-          referenceModel: 'RegistrationRefund',
+          idempotencyKey: `REGREFUND-${refund._id.toString()}`,
+          sourceReference: refund._id.toString(),
+          sourceModel: 'RegistrationRefund',
           processedBy: new mongoose.Types.ObjectId(adminId),
         });
 
