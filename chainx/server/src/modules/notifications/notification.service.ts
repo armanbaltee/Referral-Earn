@@ -63,7 +63,7 @@ export class NotificationService {
 
       if (smtpHost && smtpUser && smtpPass) {
         // Live SMTP provider configured
-        logger.info(`[EmailAdapter] Delivering live SMTP email to ${user.email} (Subject: ${subject})`);
+        logger.info(`[EmailAdapter] Delivering live SMTP email to ${user.email} via ${smtpHost}:${smtpPort || '587'} (Subject: ${subject})`);
       } else {
         // Fallback email dispatch logger for sandbox / test environment
         logger.info(`[EmailAdapter Sandbox] Dispatched email to <${user.email}>: "${subject}" -> ${bodyText}`);

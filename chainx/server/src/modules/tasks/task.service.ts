@@ -16,6 +16,8 @@ import { WalletService } from '../wallet/wallet.service.js';
 import { TransactionType } from '../transactions/walletTransaction.model.js';
 import { AuditLog, AuditAction } from '../admin/auditLog.model.js';
 import { BadRequestError, NotFoundError } from '../../common/errors.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { NotificationType } from '../notifications/notification.model.js';
 
 export interface CreateTaskDTO {
   title: string;
@@ -527,6 +529,19 @@ export class TaskService {
       );
 
       await session.commitTransaction();
+
+      // Dispatch non-blocking notifications AFTER transaction commits
+      NotificationService.createNotification({
+        userId: submission.user.toString(),
+        type: NotificationType.TASK_SUBMISSION_APPROVED,
+        title: 'Task Submission Approved',
+        message: `Your submission for task "${task.title}" has been approved! Rs. ${submission.rewardAmount / 100} has been credited to your wallet.`,
+        referenceId: submission._id.toString(),
+        referenceModel: 'TaskSubmission',
+        link: '/wallet',
+        sendEmail: true,
+      }).catch(() => {});
+
       return submission;
     } catch (err) {
       await session.abortTransaction();
@@ -567,6 +582,17 @@ export class TaskService {
       targetModel: 'TaskSubmission',
       description: `Task submission rejected for user ${submission.user}. Reason: ${reason}`,
     });
+
+    NotificationService.createNotification({
+      userId: submission.user.toString(),
+      type: NotificationType.TASK_SUBMISSION_REJECTED,
+      title: 'Task Submission Rejected',
+      message: `Your task submission was not approved. Reason: ${reason}`,
+      referenceId: submission._id.toString(),
+      referenceModel: 'TaskSubmission',
+      link: '/tasks/my-submissions',
+      sendEmail: true,
+    }).catch(() => {});
 
     return submission;
   }

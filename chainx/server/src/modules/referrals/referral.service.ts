@@ -28,6 +28,8 @@ import { Commission, CommissionType, CommissionStatus } from '../commissions/com
 import { RegistrationPayment, RegPaymentStatus } from '../transactions/registrationPayment.model.js';
 import { SystemSettingService } from '../admin/systemSetting.service.js';
 import { AuditLog, AuditAction } from '../admin/auditLog.model.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { NotificationType } from '../notifications/notification.model.js';
 import { BadRequestError, NotFoundError, ConflictError } from '../../common/errors.js';
 
 export interface ReferralDashboardData {
@@ -378,6 +380,17 @@ export class ReferralService {
       referral.commissionPaidAt = new Date();
       await referral.save();
 
+      NotificationService.createNotification({
+        userId: referrer._id.toString(),
+        type: NotificationType.REFERRAL_COMMISSION_APPROVED,
+        title: 'Referral Commission Earned',
+        message: `You earned Rs. ${commissionAmount / 100} commission for eligible direct referral: ${referee.name || referee.email}!`,
+        referenceId: referral._id.toString(),
+        referenceModel: 'Referral',
+        link: '/referrals',
+        sendEmail: true,
+      }).catch(() => {});
+
       await AuditLog.create({
         actor: referee._id,
         action: AuditAction.USER_ACTIVATED,
@@ -510,6 +523,17 @@ export class ReferralService {
       description: `User ${referrerUserId} achieved milestone of 10 direct referrals. Bonus of Rs. ${bonusAmount / 100} credited to wallet.`,
     });
 
+    NotificationService.createNotification({
+      userId: referrerUserId,
+      type: NotificationType.MILESTONE_ACHIEVED,
+      title: 'Milestone Bonus Achieved!',
+      message: `Congratulations! You achieved 10 verified direct referrals. An extra Rs. ${bonusAmount / 100} milestone bonus has been credited to your wallet!`,
+      referenceId: milestoneRecord._id.toString(),
+      referenceModel: 'MilestoneAchievement',
+      link: '/wallet',
+      sendEmail: true,
+    }).catch(() => {});
+
     return milestoneRecord;
   }
 
@@ -547,10 +571,28 @@ export class ReferralService {
           qualifyingReferralsCount: eligibleCount,
           status: RefundStatus.ELIGIBLE,
         });
+
+        NotificationService.createNotification({
+          userId: user._id.toString(),
+          type: NotificationType.REFUND_ELIGIBLE,
+          title: 'Registration Fee Refund Eligible',
+          message: 'You have verified 10 direct referrals and are now eligible for a 100% refund of your Rs. 15,000 registration fee!',
+          link: '/referrals',
+          sendEmail: true,
+        }).catch(() => {});
       } else if (existingRefund.status === RefundStatus.INELIGIBLE) {
         existingRefund.status = RefundStatus.ELIGIBLE;
         existingRefund.qualifyingReferralsCount = eligibleCount;
         await existingRefund.save();
+
+        NotificationService.createNotification({
+          userId: user._id.toString(),
+          type: NotificationType.REFUND_ELIGIBLE,
+          title: 'Registration Fee Refund Eligible',
+          message: 'You have verified 10 direct referrals and are now eligible for a 100% refund of your Rs. 15,000 registration fee!',
+          link: '/referrals',
+          sendEmail: true,
+        }).catch(() => {});
       }
     }
   }
@@ -862,6 +904,17 @@ export class ReferralService {
         description: `Registration fee refund rejected for user ${refund.user}. Reason: ${refund.rejectionReason}`,
       });
 
+      NotificationService.createNotification({
+        userId: refund.user.toString(),
+        type: NotificationType.REFUND_COMPLETED,
+        title: 'Refund Request Update',
+        message: `Your registration fee refund request was rejected. Reason: ${refund.rejectionReason}`,
+        referenceId: refund._id.toString(),
+        referenceModel: 'RegistrationRefund',
+        link: '/referrals',
+        sendEmail: true,
+      }).catch(() => {});
+
       return refund;
     }
 
@@ -919,6 +972,17 @@ export class ReferralService {
         targetModel: 'RegistrationRefund',
         description: `Registration fee refund of Rs. ${refund.feeAmount / 100} completed for user ${refund.user}. Method: ${refund.payoutMethod}`,
       });
+
+      NotificationService.createNotification({
+        userId: refund.user.toString(),
+        type: NotificationType.REFUND_COMPLETED,
+        title: 'Registration Fee Refund Paid',
+        message: `Your 100% registration fee refund of Rs. ${refund.feeAmount / 100} has been processed via ${refund.payoutMethod}!`,
+        referenceId: refund._id.toString(),
+        referenceModel: 'RegistrationRefund',
+        link: '/wallet',
+        sendEmail: true,
+      }).catch(() => {});
     }
 
     return refund;

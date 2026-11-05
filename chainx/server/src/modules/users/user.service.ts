@@ -23,6 +23,8 @@ import {
   type AdminUserQueryDTO,
 } from './user.types.js';
 import { UserRole, type AccessTokenPayload } from '../../types/index.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { NotificationType } from '../notifications/notification.model.js';
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function hashToken(token: string): string {
@@ -143,6 +145,15 @@ export class UserService {
       ipAddress,
       userAgent,
     });
+
+    NotificationService.createNotification({
+      userId: user._id.toString(),
+      type: NotificationType.REGISTRATION_SUCCESS,
+      title: 'Welcome to ChainX!',
+      message: 'Your account has been created successfully. Complete your Rs. 15,000 registration fee to activate your membership and unlock referrals.',
+      link: '/payment/registration',
+      sendEmail: true,
+    }).catch(() => {});
 
     return {
       user,
@@ -421,6 +432,16 @@ export class UserService {
     }
 
     await user.save();
+
+    NotificationService.createNotification({
+      userId: user._id.toString(),
+      type: NotificationType.ACCOUNT_VERIFIED,
+      title: 'Email Verified',
+      message: 'Your email address has been successfully verified.',
+      link: '/dashboard',
+      sendEmail: true,
+    }).catch(() => {});
+
     return user;
   }
 
@@ -497,6 +518,26 @@ export class UserService {
       targetModel: 'User',
       description: `Registration fee (Rs. 15,000) confirmed. Account activated. Ref: ${transactionId ?? 'N/A'}. Notes: ${notes ?? 'None'}`,
     });
+
+    NotificationService.createNotification({
+      userId: user._id.toString(),
+      type: NotificationType.PAYMENT_CONFIRMED,
+      title: 'Registration Payment Confirmed',
+      message: 'Your Rs. 15,000 registration fee payment has been confirmed! Your account is now fully active.',
+      link: '/dashboard',
+      sendEmail: true,
+    }).catch(() => {});
+
+    if (referral && referral.referrer) {
+      NotificationService.createNotification({
+        userId: referral.referrer.toString(),
+        type: NotificationType.REFERRAL_REGISTERED,
+        title: 'New Active Referral',
+        message: `Your referral ${user.name || user.email} has confirmed their registration payment!`,
+        link: '/referrals',
+        sendEmail: true,
+      }).catch(() => {});
+    }
 
     return user;
   }
