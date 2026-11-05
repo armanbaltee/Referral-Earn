@@ -162,7 +162,70 @@ export class SystemSettingService {
 
     return updated;
   }
+
+  // ─── Phase 8: Platform General Configuration ────────────────────────────────
+  public static async getPlatformGeneralConfig(): Promise<PlatformGeneralConfig> {
+    const setting = await SystemSetting.findOne({ key: 'platform_general' }).lean();
+    if (!setting) {
+      await SystemSetting.create({
+        key: 'platform_general',
+        value: DEFAULT_PLATFORM_CONFIG as unknown as Record<string, unknown>,
+        description: 'General platform limits, contact details and maintenance mode',
+        category: 'general',
+      });
+      return DEFAULT_PLATFORM_CONFIG;
+    }
+    return setting.value as unknown as PlatformGeneralConfig;
+  }
+
+  public static async updatePlatformGeneralConfig(
+    config: Partial<PlatformGeneralConfig>,
+    adminId: string
+  ): Promise<PlatformGeneralConfig> {
+    const current = await this.getPlatformGeneralConfig();
+    const updated: PlatformGeneralConfig = {
+      ...current,
+      ...config,
+    };
+
+    await SystemSetting.findOneAndUpdate(
+      { key: 'platform_general' },
+      {
+        value: updated as unknown as Record<string, unknown>,
+        updatedBy: new mongoose.Types.ObjectId(adminId),
+      },
+      { upsert: true, new: true }
+    );
+
+    await AuditLog.create({
+      actor: new mongoose.Types.ObjectId(adminId),
+      action: AuditAction.SYSTEM_CONFIG_UPDATED,
+      target: new mongoose.Types.ObjectId(adminId),
+      targetModel: 'SystemSetting',
+      description: 'Platform general settings updated.',
+    });
+
+    return updated;
+  }
 }
+
+export interface PlatformGeneralConfig {
+  minWithdrawalPaisa: number;
+  maxWithdrawalPaisa: number;
+  supportEmail: string;
+  supportPhone: string;
+  maintenanceMode: boolean;
+  announcementTicker?: string | undefined;
+}
+
+const DEFAULT_PLATFORM_CONFIG: PlatformGeneralConfig = {
+  minWithdrawalPaisa: 10000, // Rs. 100
+  maxWithdrawalPaisa: 5000000, // Rs. 50,000
+  supportEmail: 'support@chainx.pk',
+  supportPhone: '+92 300 1234567',
+  maintenanceMode: false,
+  announcementTicker: 'Welcome to ChainX – Secure Earning & Affiliate Network',
+};
 
 export interface ReferralCommissionPolicy {
   commissionPerReferral: number; // in paisa (150000 = Rs. 1,500)

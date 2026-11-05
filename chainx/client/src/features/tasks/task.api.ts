@@ -93,7 +93,7 @@ export const taskApi = {
       success: boolean;
       tasks: TaskItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/tasks', { params });
+    }>('/tasks', { params });
     return res.data;
   },
 
@@ -131,18 +131,18 @@ export const taskApi = {
       success: boolean;
       submissions: TaskSubmissionItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/tasks/me/submissions', { params });
+    }>('/tasks/me/submissions', { params });
     return res.data;
   },
 
   getUserEarnings: async () => {
-    const res = await api.get<{ success: boolean; data: TaskEarnings }>('/api/v1/tasks/earnings');
+    const res = await api.get<{ success: boolean; data: TaskEarnings }>('/tasks/earnings');
     return res.data.data;
   },
 
   // Admin APIs
   getOverview: async () => {
-    const res = await api.get<{ success: boolean; data: any }>('/api/v1/tasks/admin/overview');
+    const res = await api.get<{ success: boolean; data: any }>('/tasks/admin/overview');
     return res.data.data;
   },
 
@@ -151,13 +151,13 @@ export const taskApi = {
       success: boolean;
       tasks: TaskItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/tasks/admin/all', { params });
+    }>('/tasks/admin/all', { params });
     return res.data;
   },
 
   createTask: async (data: Partial<TaskItem>) => {
     const res = await api.post<{ success: boolean; message: string; data: TaskItem }>(
-      '/api/v1/tasks/admin/create',
+      '/tasks/admin/create',
       data
     );
     return res.data;
@@ -184,7 +184,7 @@ export const taskApi = {
       success: boolean;
       submissions: TaskSubmissionItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/tasks/admin/submissions/all', { params });
+    }>('/tasks/admin/submissions/all', { params });
     return res.data;
   },
 

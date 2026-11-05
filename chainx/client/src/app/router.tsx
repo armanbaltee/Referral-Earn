@@ -45,6 +45,15 @@ const MySubmissionsPage = lazy(() => import('@features/tasks/pages/MySubmissions
 const AdminTasksPage = lazy(() => import('@features/tasks/pages/AdminTasksPage'));
 const AdminTaskSubmissionsPage = lazy(() => import('@features/tasks/pages/AdminTaskSubmissionsPage'));
 
+// ─── Phase 8: Complete Platform Administration ───────────────────────────────
+const AdminUsersPage = lazy(() => import('@features/users/pages/AdminUsersPage'));
+const AdminCommissionsPage = lazy(() => import('@features/commissions/pages/AdminCommissionsPage'));
+const AdminRefundsPage = lazy(() => import('@features/referrals/pages/AdminRefundsPage'));
+const AdminAnnouncementsPage = lazy(() => import('@features/announcements/pages/AdminAnnouncementsPage'));
+const AdminReportsPage = lazy(() => import('@features/reports/pages/AdminReportsPage'));
+const AdminAuditLogsPage = lazy(() => import('@features/admin/pages/AdminAuditLogsPage'));
+const AdminSettingsPage = lazy(() => import('@features/admin/pages/AdminSettingsPage'));
+
 // ─── Route Guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.ReactElement {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -299,11 +308,9 @@ export const router = createBrowserRouter([
       {
         path: 'users',
         element: (
-          <FeaturePlaceholder
-            title="User Management"
-            description="Search, view, verify, ban, and manage user accounts and KYC statuses."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminUsersPage />
+          </Suspense>
         ),
       },
       {
@@ -341,11 +348,9 @@ export const router = createBrowserRouter([
       {
         path: 'commissions',
         element: (
-          <FeaturePlaceholder
-            title="Commission Engine"
-            description="Configure tier percentages, rule sets, payout splits, and bonus pools."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminCommissionsPage />
+          </Suspense>
         ),
       },
       {
@@ -375,11 +380,9 @@ export const router = createBrowserRouter([
       {
         path: 'refunds',
         element: (
-          <FeaturePlaceholder
-            title="100% Refund Claims"
-            description="Verify 10-referral milestone claims and execute automated full deposit refunds."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminRefundsPage />
+          </Suspense>
         ),
       },
       {
@@ -407,53 +410,35 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'transactions',
-        element: (
-          <FeaturePlaceholder
-            title="Global Transactions"
-            description="Global financial journal, double-entry audit statements, and export tools."
-            backHref="/admin"
-          />
-        ),
-      },
-      {
         path: 'announcements',
         element: (
-          <FeaturePlaceholder
-            title="Announcements & Banners"
-            description="Broadcast platform news, maintenance notices, and promotion popups."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminAnnouncementsPage />
+          </Suspense>
         ),
       },
       {
         path: 'reports',
         element: (
-          <FeaturePlaceholder
-            title="Financial & Performance Reports"
-            description="Generate profit/loss summaries, user retention metrics, and liability forecasts."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminReportsPage />
+          </Suspense>
         ),
       },
       {
         path: 'audit-logs',
         element: (
-          <FeaturePlaceholder
-            title="System Audit Logs"
-            description="Immutable record of administrative actions, logins, and permission changes."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminAuditLogsPage />
+          </Suspense>
         ),
       },
       {
         path: 'settings',
         element: (
-          <FeaturePlaceholder
-            title="Platform Settings"
-            description="Configure site metadata, email gateways, blockchain nodes, and rate limits."
-            backHref="/admin"
-          />
+          <Suspense fallback={<PageLoader />}>
+            <AdminSettingsPage />
+          </Suspense>
         ),
       },
     ],

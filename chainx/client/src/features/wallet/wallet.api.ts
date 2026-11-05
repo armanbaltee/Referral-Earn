@@ -82,7 +82,7 @@ export interface PaymentInstructions {
 export const walletApi = {
   // User wallet
   getMyWallet: async () => {
-    const res = await api.get<{ success: boolean; data: WalletSummary }>('/api/v1/wallet/me');
+    const res = await api.get<{ success: boolean; data: WalletSummary }>('/wallet/me');
     return res.data.data;
   },
 
@@ -91,13 +91,13 @@ export const walletApi = {
       success: boolean;
       transactions: WalletTransactionItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/wallet/me/transactions', { params });
+    }>('/wallet/me/transactions', { params });
     return res.data;
   },
 
   // Deposits
   getPaymentInstructions: async () => {
-    const res = await api.get<{ success: boolean; data: PaymentInstructions }>('/api/v1/deposits/instructions');
+    const res = await api.get<{ success: boolean; data: PaymentInstructions }>('/deposits/instructions');
     return res.data.data;
   },
 
@@ -108,7 +108,7 @@ export const walletApi = {
     proofImageUrl?: string | undefined;
     senderNotes?: string | undefined;
   }) => {
-    const res = await api.post<{ success: boolean; message: string; data: DepositItem }>('/api/v1/deposits', data);
+    const res = await api.post<{ success: boolean; message: string; data: DepositItem }>('/deposits', data);
     return res.data;
   },
 
@@ -117,7 +117,7 @@ export const walletApi = {
       success: boolean;
       deposits: DepositItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/deposits/me', { params });
+    }>('/deposits/me', { params });
     return res.data;
   },
 
@@ -128,7 +128,7 @@ export const walletApi = {
     accountTitle: string;
     accountNumber: string;
   }) => {
-    const res = await api.post<{ success: boolean; message: string; data: WithdrawalItem }>('/api/v1/withdrawals', data);
+    const res = await api.post<{ success: boolean; message: string; data: WithdrawalItem }>('/withdrawals', data);
     return res.data;
   },
 
@@ -137,7 +137,7 @@ export const walletApi = {
       success: boolean;
       withdrawals: WithdrawalItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/withdrawals/me', { params });
+    }>('/withdrawals/me', { params });
     return res.data;
   },
 
@@ -147,7 +147,7 @@ export const walletApi = {
       success: boolean;
       wallets: any[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/wallet/admin', { params });
+    }>('/wallet/admin', { params });
     return res.data;
   },
 
@@ -156,12 +156,12 @@ export const walletApi = {
       success: boolean;
       transactions: WalletTransactionItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/wallet/admin/ledger', { params });
+    }>('/wallet/admin/ledger', { params });
     return res.data;
   },
 
   getFinancialSummary: async (params?: { startDate?: string | undefined; endDate?: string | undefined } | undefined) => {
-    const res = await api.get<{ success: boolean; data: any }>('/api/v1/wallet/admin/summary', { params });
+    const res = await api.get<{ success: boolean; data: any }>('/wallet/admin/summary', { params });
     return res.data.data;
   },
 
@@ -175,7 +175,7 @@ export const walletApi = {
       success: boolean;
       deposits: DepositItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/deposits/admin', { params });
+    }>('/deposits/admin', { params });
     return res.data;
   },
 
@@ -194,7 +194,7 @@ export const walletApi = {
       success: boolean;
       withdrawals: WithdrawalItem[];
       meta: { page: number; limit: number; total: number; totalPages: number };
-    }>('/api/v1/withdrawals/admin', { params });
+    }>('/withdrawals/admin', { params });
     return res.data;
   },
 
