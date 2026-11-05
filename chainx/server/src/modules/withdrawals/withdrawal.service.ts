@@ -6,6 +6,8 @@ import { PaymentMethod } from '../deposits/deposit.model.js';
 import { WalletService } from '../wallet/wallet.service.js';
 import { AuditLog, AuditAction } from '../admin/auditLog.model.js';
 import { BadRequestError, NotFoundError, ConflictError } from '../../common/errors.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { NotificationType } from '../notifications/notification.model.js';
 
 export const MIN_WITHDRAWAL_PAISA = 100_00; // Rs. 100
 export const MAX_WITHDRAWAL_PAISA = 50_000_00; // Rs. 50,000
@@ -201,6 +203,16 @@ export class WithdrawalService {
       description: `Withdrawal approved: Rs. ${withdrawal.amount / 100} to ${withdrawal.paymentMethod} ${withdrawal.accountNumber}. Notes: ${params.adminNotes || 'None'}`,
     });
 
+    NotificationService.createNotification({
+      userId: withdrawal.user.toString(),
+      type: NotificationType.WITHDRAWAL_APPROVED,
+      title: 'Withdrawal Approved',
+      message: `Your withdrawal of Rs. ${withdrawal.amount / 100} has been approved and is being processed.`,
+      referenceId: withdrawal._id.toString(),
+      referenceModel: 'Withdrawal',
+      sendEmail: true,
+    }).catch(() => {});
+
     return withdrawal;
   }
 
@@ -250,6 +262,16 @@ export class WithdrawalService {
       targetModel: 'Withdrawal',
       description: `Withdrawal completed: Rs. ${withdrawal.amount / 100} to ${withdrawal.paymentMethod} ${withdrawal.accountNumber}. Gateway TID: ${params.gatewayTransactionId || 'N/A'}`,
     });
+
+    NotificationService.createNotification({
+      userId: withdrawal.user.toString(),
+      type: NotificationType.WITHDRAWAL_COMPLETED,
+      title: 'Withdrawal Completed',
+      message: `Your withdrawal of Rs. ${withdrawal.amount / 100} has been sent to your ${withdrawal.paymentMethod} account.`,
+      referenceId: withdrawal._id.toString(),
+      referenceModel: 'Withdrawal',
+      sendEmail: true,
+    }).catch(() => {});
 
     return withdrawal;
   }

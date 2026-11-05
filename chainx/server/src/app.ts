@@ -25,6 +25,7 @@ import { withdrawalRoutes } from './modules/withdrawals/withdrawal.routes.js';
 import { taskRoutes } from './modules/tasks/task.routes.js';
 import { announcementRoutes } from './modules/announcements/announcement.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
+import { notificationRoutes } from './modules/notifications/notification.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -84,6 +85,7 @@ app.use('/api/v1/withdrawals', withdrawalRoutes);
 app.use('/api/v1/tasks', taskRoutes);
 app.use('/api/v1/announcements', announcementRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // ─── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFoundHandler);

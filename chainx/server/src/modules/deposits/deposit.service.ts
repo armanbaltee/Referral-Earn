@@ -7,6 +7,8 @@ import { TransactionType } from '../transactions/walletTransaction.model.js';
 import { AuditLog, AuditAction } from '../admin/auditLog.model.js';
 import { SystemSettingService } from '../admin/systemSetting.service.js';
 import { BadRequestError, NotFoundError, ConflictError } from '../../common/errors.js';
+import { NotificationService } from '../notifications/notification.service.js';
+import { NotificationType } from '../notifications/notification.model.js';
 
 export const MIN_DEPOSIT_PAISA = 100_00; // Rs. 100
 export const MAX_DEPOSIT_PAISA = 100_000_00; // Rs. 100,000
@@ -208,6 +210,18 @@ export class DepositService {
       );
 
       await session.commitTransaction();
+
+      // Non-blocking notification: dispatch AFTER transaction commits
+      NotificationService.createNotification({
+        userId: deposit.user.toString(),
+        type: NotificationType.DEPOSIT_APPROVED,
+        title: 'Deposit Approved',
+        message: `Your deposit of Rs. ${deposit.amount / 100} has been approved and credited to your wallet.`,
+        referenceId: deposit._id.toString(),
+        referenceModel: 'Deposit',
+        sendEmail: true,
+      }).catch(() => {});
+
       return deposit;
     } catch (err) {
       await session.abortTransaction();
@@ -249,6 +263,16 @@ export class DepositService {
       targetModel: 'Deposit',
       description: `Deposit rejected: Rs. ${deposit.amount / 100} via ${deposit.paymentMethod}. Reason: ${params.reason}`,
     });
+
+    NotificationService.createNotification({
+      userId: deposit.user.toString(),
+      type: NotificationType.DEPOSIT_REJECTED,
+      title: 'Deposit Rejected',
+      message: `Your deposit of Rs. ${deposit.amount / 100} was rejected. Reason: ${params.reason}`,
+      referenceId: deposit._id.toString(),
+      referenceModel: 'Deposit',
+      sendEmail: true,
+    }).catch(() => {});
 
     return deposit;
   }

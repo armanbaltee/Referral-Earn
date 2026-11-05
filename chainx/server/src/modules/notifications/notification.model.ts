@@ -1,6 +1,27 @@
 import mongoose, { type Document, Schema } from 'mongoose';
 
 export enum NotificationType {
+  // Phase 9 Required Types
+  REGISTRATION_SUCCESS = 'registration_success',
+  PAYMENT_CONFIRMED = 'payment_confirmed',
+  ACCOUNT_VERIFIED = 'account_verified',
+  REFERRAL_REGISTERED = 'referral_registered',
+  REFERRAL_COMMISSION_APPROVED = 'referral_commission_approved',
+  MILESTONE_ACHIEVED = 'milestone_achieved',
+  REFUND_ELIGIBLE = 'refund_eligible',
+  REFUND_COMPLETED = 'refund_completed',
+  DEPOSIT_APPROVED = 'deposit_approved',
+  DEPOSIT_REJECTED = 'deposit_rejected',
+  WITHDRAWAL_APPROVED = 'withdrawal_approved',
+  WITHDRAWAL_COMPLETED = 'withdrawal_completed',
+  WITHDRAWAL_REJECTED = 'withdrawal_rejected',
+  TASK_ASSIGNED = 'task_assigned',
+  TASK_SUBMISSION_APPROVED = 'task_submission_approved',
+  TASK_SUBMISSION_REJECTED = 'task_submission_rejected',
+  TASK_REWARD_CREDITED = 'task_reward_credited',
+  NEW_ANNOUNCEMENT = 'new_announcement',
+
+  // General Categories
   SYSTEM = 'system',
   DEPOSIT = 'deposit',
   WITHDRAWAL = 'withdrawal',
@@ -18,11 +39,11 @@ export interface INotification {
   title: string;
   message: string;
   isRead: boolean;
-  readAt?: Date;
-  link?: string;
-  referenceId?: string;
-  referenceModel?: string;
-  metadata?: Record<string, unknown>;
+  readAt?: Date | undefined;
+  link?: string | undefined;
+  referenceId?: string | undefined;
+  referenceModel?: string | undefined;
+  metadata?: Record<string, unknown> | undefined;
   createdAt: Date;
   updatedAt: Date;
 }
