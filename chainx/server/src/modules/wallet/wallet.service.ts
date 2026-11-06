@@ -23,6 +23,36 @@ function generateIdempotencyKey(prefix: string): string {
   return `${prefix}-${Date.now()}-${crypto.randomBytes(8).toString('hex')}`;
 }
 
+async function runWithTransactionFallback<T>(
+  fn: (session?: mongoose.ClientSession) => Promise<T>
+): Promise<T> {
+  let session: mongoose.ClientSession | null = null;
+  try {
+    session = await mongoose.startSession();
+    session.startTransaction();
+    const result = await fn(session);
+    await session.commitTransaction();
+    return result;
+  } catch (err: unknown) {
+    if (session) {
+      await session.abortTransaction().catch(() => {});
+    }
+    const msg = err instanceof Error ? err.message : String(err);
+    if (
+      msg.includes('replica set member or mongos') ||
+      msg.includes('Transaction numbers are only allowed')
+    ) {
+      // Standalone MongoDB dev fallback: executes without transaction session
+      return await fn(undefined);
+    }
+    throw err;
+  } finally {
+    if (session) {
+      await session.endSession();
+    }
+  }
+}
+
 export class WalletService {
   // ─── Ensure Wallet Exists ─────────────────────────────────────────────────
   public static async ensureWallet(userId: string) {
@@ -78,19 +108,21 @@ export class WalletService {
     const existing = await WalletTransaction.findOne({ idempotencyKey: params.idempotencyKey });
     if (existing) return existing;
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
+    return runWithTransactionFallback(async (session) => {
       const wallet = await Wallet.findOneAndUpdate(
         { user: new mongoose.Types.ObjectId(params.userId) },
         { $inc: { availableBalance: params.amount } },
-        { new: true, session, upsert: true }
+        { new: true, ...(session ? { session } : {}), upsert: true }
       );
       if (!wallet) throw new Error('Wallet not found during credit.');
 
       // Update lifetime totals per type
       const totalsUpdate = WalletService._buildTotalsCredit(params.type, params.amount);
-      await Wallet.findByIdAndUpdate(wallet._id, { $inc: totalsUpdate }, { session });
+      await Wallet.findByIdAndUpdate(
+        wallet._id,
+        { $inc: totalsUpdate },
+        session ? { session } : {}
+      );
 
       const tx = await WalletTransaction.create(
         [
@@ -114,17 +146,11 @@ export class WalletService {
             metadata: params.metadata,
           },
         ],
-        { session }
+        session ? { session } : {}
       );
 
-      await session.commitTransaction();
       return tx[0];
-    } catch (err) {
-      await session.abortTransaction();
-      throw err;
-    } finally {
-      await session.endSession();
-    }
+    });
   }
 
   // ─── Reserve for Withdrawal (debit pending) ────────────────────────────────
@@ -139,13 +165,11 @@ export class WalletService {
     const existing = await WalletTransaction.findOne({ idempotencyKey: params.idempotencyKey });
     if (existing) return existing;
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
+    return runWithTransactionFallback(async (session) => {
       const wallet = await Wallet.findOne(
         { user: new mongoose.Types.ObjectId(params.userId) },
         null,
-        { session }
+        session ? { session } : {}
       );
       if (!wallet) throw new NotFoundError('Wallet not found.');
       if (wallet.availableBalance < params.amount) {
@@ -154,7 +178,7 @@ export class WalletService {
 
       wallet.availableBalance -= params.amount;
       wallet.pendingBalance += params.amount;
-      await wallet.save({ session });
+      await wallet.save(session ? { session } : {});
 
       const tx = await WalletTransaction.create(
         [
@@ -174,17 +198,11 @@ export class WalletService {
             sourceModel: 'Withdrawal',
           },
         ],
-        { session }
+        session ? { session } : {}
       );
 
-      await session.commitTransaction();
       return tx[0];
-    } catch (err) {
-      await session.abortTransaction();
-      throw err;
-    } finally {
-      await session.endSession();
-    }
+    });
   }
 
   // ─── Finalize Withdrawal (complete payout) ─────────────────────────────────

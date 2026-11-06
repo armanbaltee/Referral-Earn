@@ -9,6 +9,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc --project tsconfig.json",
     "start": "node dist/server.js",
+    "seed:admin": "node scripts/create-admin.mjs --default",
+    "create:admin": "node scripts/create-admin.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",

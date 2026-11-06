@@ -54,6 +54,9 @@ const AdminReportsPage = lazy(() => import('@features/reports/pages/AdminReports
 const AdminAuditLogsPage = lazy(() => import('@features/admin/pages/AdminAuditLogsPage'));
 const AdminSettingsPage = lazy(() => import('@features/admin/pages/AdminSettingsPage'));
 
+// ─── Phase 9: Notifications ──────────────────────────────────────────────────
+const NotificationsPage = lazy(() => import('@features/notifications/pages/NotificationsPage'));
+
 // ─── Route Guards ──────────────────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: React.ReactNode }): React.ReactElement {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -262,10 +265,9 @@ export const router = createBrowserRouter([
       {
         path: '/notifications',
         element: (
-          <FeaturePlaceholder
-            title="Notification Center"
-            description="Real-time alerts for commissions, approvals, task verification, and platform news."
-          />
+          <Suspense fallback={<PageLoader />}>
+            <NotificationsPage />
+          </Suspense>
         ),
       },
       {

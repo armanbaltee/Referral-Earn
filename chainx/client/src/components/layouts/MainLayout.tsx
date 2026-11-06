@@ -37,6 +37,7 @@ import {
 } from '@components/ui/dropdown-menu';
 import { cn } from '@lib/utils';
 import { UserRole } from '@/types';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 
 interface NavItem {
   label: string;
@@ -277,10 +278,10 @@ export function MainLayout(): React.ReactElement {
             <Avatar name={user?.name ?? 'User'} size="sm" />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-foreground truncate">
-                {user?.name ?? 'Arman Ali'}
+                {user?.name ?? 'Member'}
               </p>
               <p className="text-[11px] text-muted-foreground truncate">
-                {user?.email ?? 'user@chainx.io'}
+                {user?.email ?? ''}
               </p>
             </div>
           </div>
@@ -348,51 +349,8 @@ export function MainLayout(): React.ReactElement {
               <span>USDT (TRC20) Gateway</span>
             </div>
 
-            {/* Notification Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Notifications"
-                  className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative border border-border/40"
-                >
-                  <Bell className="h-4 w-4" />
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 p-0">
-                <div className="p-3 border-b border-border flex items-center justify-between bg-muted/20">
-                  <span className="text-xs font-semibold text-foreground">Notifications</span>
-                  <Badge variant="secondary" className="text-[10px]">
-                    2 unread
-                  </Badge>
-                </div>
-                <div className="divide-y divide-border/60 max-h-72 overflow-y-auto">
-                  <div className="p-3 hover:bg-muted/40 transition-colors cursor-pointer text-xs space-y-1">
-                    <p className="font-medium text-foreground">Referral Commission Credited</p>
-                    <p className="text-muted-foreground text-[11px]">
-                      You earned $25.00 from referral level 1 activation.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/70">10 mins ago</p>
-                  </div>
-                  <div className="p-3 hover:bg-muted/40 transition-colors cursor-pointer text-xs space-y-1">
-                    <p className="font-medium text-foreground">Daily Task Approved</p>
-                    <p className="text-muted-foreground text-[11px]">
-                      Task #402 verification passed. $5.00 added to wallet.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/70">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="p-2 border-t border-border text-center">
-                  <Link
-                    to="/notifications"
-                    className="text-xs text-primary font-medium hover:underline inline-block py-1"
-                  >
-                    View all notifications
-                  </Link>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Live Notification Bell */}
+            <NotificationBell />
 
             {/* User Profile Dropdown */}
             <DropdownMenu>
@@ -408,9 +366,9 @@ export function MainLayout(): React.ReactElement {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="font-normal p-3">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-xs font-semibold leading-none">{user?.name ?? 'Arman Ali'}</p>
+                    <p className="text-xs font-semibold leading-none">{user?.name ?? 'Member'}</p>
                     <p className="text-[11px] leading-none text-muted-foreground">
-                      {user?.email ?? 'user@chainx.io'}
+                      {user?.email ?? ''}
                     </p>
                     <Badge variant="outline" className="w-fit text-[10px] mt-1.5">
                       Role: {user?.role ?? 'Member'}

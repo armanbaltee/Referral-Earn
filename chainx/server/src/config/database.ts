@@ -5,7 +5,8 @@ import { env } from './env.js';
 let isConnected = false;
 
 export async function connectDatabase(): Promise<void> {
-  if (isConnected) {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
     console.info('📦 Using existing MongoDB connection');
     return;
   }
